@@ -65,10 +65,10 @@ Banner peringatan muncul secara otomatis di dalam kartu budget saat pengeluaran 
 ### 2.4 Status Dompet Dinamis (Clean Text Badges)
 | Status Dompet | Kriteria Terpakai | Accent HEX | Badge Background | Teks Label |
 | :--- | :--- | :--- | :--- | :--- |
-| **Mode Sultan** | `< 40%` | `#2A9D8F` | `#E8F6F4` | Mode Sultan |
-| **Masih Aman** | `40% - 74%` | `#3B82F6` | `#EFF6FF` | Masih Aman |
-| **Mulai Waspada** | `75% - 90%` | `#F59E0B` | `#FEF3E8` | Mulai Waspada |
-| **Mode Bertahan Hidup**| `> 90%` | `#E11D48` | `#FFF1F2` | Mode Bertahan Hidup |
+| **Mode Sultan** | `< 40%` | `#2A9D8F` | `#E8F6F4` | Udeh Tenang |
+| **Masih Aman** | `40% - 74%` | `#3B82F6` | `#EFF6FF` | Aman Banget|
+| **Mulai Waspada** | `75% - 90%` | `#F59E0B` | `#FEF3E8` | Miskin |
+| **Mode Bertahan Hidup**| `> 90%` | `#E11D48` | `#FFF1F2` | Miskin Melarat Hina |
 
 ---
 
