@@ -65,7 +65,6 @@ function App() {
       categoryId: newTx.categoryId,
       date: newTx.date,
       createdAt: Date.now(),
-      isSample: false,
     };
 
     setTransactions((prev) => [transaction, ...prev]);

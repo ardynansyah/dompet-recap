@@ -21,7 +21,6 @@ export interface Transaction {
   categoryId: CategoryId;
   date: string; // Format 'YYYY-MM-DD'
   createdAt: number;
-  isSample?: boolean;
 }
 
 export interface BudgetSettings {

@@ -148,11 +148,6 @@ export const TransactionHistory: React.FC<TransactionHistoryProps> = ({
                             >
                               {cat.name}
                             </span>
-                            {item.isSample && (
-                              <span className="text-[10px] font-bold text-[#94A3B8] italic">
-                                contoh
-                              </span>
-                            )}
                           </div>
                         </div>
                       </div>
