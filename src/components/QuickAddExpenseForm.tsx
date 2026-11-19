@@ -51,7 +51,7 @@ export const QuickAddExpenseForm: React.FC<QuickAddExpenseFormProps> = ({
   };
 
   return (
-    <div className="bg-white border-2 border-[#1E232A] rounded-3xl p-5 md:p-6 card-tactile">
+    <div className="bg-white border-2 border-[#1E232A] rounded-3xl p-5 md:p-6 card-tactile w-full max-w-full min-w-0">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-base font-extrabold text-[#1E232A] flex items-center gap-2">
           <span>Catat Pengeluaran Baru</span>
@@ -61,7 +61,7 @@ export const QuickAddExpenseForm: React.FC<QuickAddExpenseFormProps> = ({
         </span>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-4 w-full max-w-full min-w-0">
         {/* Nominal Input */}
         <div>
           <label className="block text-xs font-bold text-[#1E232A] uppercase tracking-wider mb-1.5">
@@ -142,17 +142,17 @@ export const QuickAddExpenseForm: React.FC<QuickAddExpenseFormProps> = ({
           </div>
         </div>
 
-        {/* Tanggal Input */}
-        <div>
+        {/* Tanggal Input (with iOS Safari fix) */}
+        <div className="w-full max-w-full min-w-0 block box-border">
           <label className="block text-xs font-bold text-[#1E232A] uppercase tracking-wider mb-1.5">
             Tanggal
           </label>
-          <div className="relative">
+          <div className="relative w-full max-w-full min-w-0 block box-border">
             <input
               type="date"
               value={date}
               onChange={(e) => setDate(e.target.value)}
-              className="w-full pl-10 pr-3.5 py-2 bg-[#F8F5EE] border-2 border-[#1E232A] rounded-xl text-xs font-bold text-[#1E232A] focus:outline-none focus:bg-white transition-all"
+              className="w-full max-w-full min-w-0 block box-border appearance-none pl-10 pr-3.5 py-2.5 bg-[#F8F5EE] border-2 border-[#1E232A] rounded-xl text-xs font-bold text-[#1E232A] focus:outline-none focus:bg-white transition-all"
             />
             <Calendar
               size={15}
