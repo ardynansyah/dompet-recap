@@ -5,7 +5,6 @@ import {
   saveTransactionsToStorage,
   loadBudgetFromStorage,
   saveBudgetToStorage,
-  getInitialSampleTransactions,
 } from './utils/storage';
 import { getCurrentMonthPrefix } from './utils/format';
 import { Header } from './components/Header';
@@ -52,9 +51,6 @@ function App() {
     return transactions.filter((t) => t.date.startsWith(selectedMonth));
   }, [transactions, selectedMonth]);
 
-  // Check if any sample data remains
-  const hasSampleData = transactions.some((t) => t.isSample);
-
   // Handlers
   const handleAddTransaction = (newTx: {
     title: string;
@@ -79,15 +75,6 @@ function App() {
     setTransactions((prev) => prev.filter((t) => t.id !== id));
   };
 
-  const handleClearSampleData = () => {
-    setTransactions((prev) => prev.filter((t) => !t.isSample));
-  };
-
-  const handleResetToSampleData = () => {
-    const samples = getInitialSampleTransactions();
-    setTransactions(samples);
-  };
-
   const handleSaveBudget = (newBudget: number) => {
     setMonthlyBudget(newBudget);
   };
@@ -99,10 +86,7 @@ function App() {
   return (
     <div className="min-h-screen bg-[#F8F5EE] text-[#1E232A] flex flex-col font-sans">
       {/* Header */}
-      <Header
-        onResetAllData={handleResetToSampleData}
-        onOpenStoryModal={() => setIsStoryModalOpen(true)}
-      />
+      <Header onOpenStoryModal={() => setIsStoryModalOpen(true)} />
 
       {/* Main Content Area */}
       <main className="flex-1 w-full max-w-5xl mx-auto px-4 py-6 md:py-8">
@@ -139,8 +123,6 @@ function App() {
             <TransactionHistory
               transactions={displayedTransactions}
               onDeleteTransaction={handleDeleteTransaction}
-              onClearSampleData={handleClearSampleData}
-              hasSampleData={hasSampleData}
             />
           </section>
         </div>

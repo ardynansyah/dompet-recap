@@ -81,6 +81,6 @@ Build a modern, fast, and responsive personal expense tracker web application in
 ## 5. Step-by-Step Implementation Instructions
 1. **Setup & Types:** Define TypeScript interfaces for `Transaction`, `Category`, and `BudgetSettings`, plus helper functions for IDR formatting and `localStorage` sync.
 2. **Core Dashboard, Warning & Form:** Build the responsive 2-column desktop / 1-column mobile layout with the Budget Summary header, dynamic Near-Limit Warning Banner, and Quick Expense Input.
-3. **Spending Graph & Transaction List:** Build the real-time Spending Graph component (myBCA thin-ring Donut Chart), date-grouped transaction list, category filters, and delete functionality with 4-5 realistic casual Indonesian sample transactions (plus a *"Hapus Data Contoh"* button).
+3. **Spending Graph & Transaction List:** Build the real-time Spending Graph component (myBCA thin-ring Donut Chart), date-grouped transaction list, category filters, and individual item delete functionality with realistic casual Indonesian sample transactions.
 4. **Story Recap Modal & PNG Export:** Build the 9:16 Recap Card component with clean 2-theme switcher (*Struk Kasir* vs. *Clean Chart*), privacy toggle (*Sensor Nominal Rp*), and `html-to-image` download handler.
 5. **Polish:** Ensure smooth micro-interactions, clean minimal-icon aesthetics, and zero horizontal overflow on mobile viewports.

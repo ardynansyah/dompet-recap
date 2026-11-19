@@ -7,15 +7,11 @@ import { formatRupiah, formatDateLabel } from '../utils/format';
 interface TransactionHistoryProps {
   transactions: Transaction[];
   onDeleteTransaction: (id: string) => void;
-  onClearSampleData: () => void;
-  hasSampleData: boolean;
 }
 
 export const TransactionHistory: React.FC<TransactionHistoryProps> = ({
   transactions,
   onDeleteTransaction,
-  onClearSampleData,
-  hasSampleData,
 }) => {
   const [selectedCategory, setSelectedCategory] = useState<CategoryId | 'all'>('all');
   const [deletingId, setDeletingId] = useState<string | null>(null);
@@ -51,7 +47,7 @@ export const TransactionHistory: React.FC<TransactionHistoryProps> = ({
 
   return (
     <div className="bg-white border-2 border-[#1E232A] rounded-3xl p-5 md:p-6 card-tactile space-y-5">
-      {/* Header & Sample Data Action */}
+      {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b-2 border-[#E6E0D4]">
         <div>
           <h3 className="text-base font-extrabold text-[#1E232A]">Riwayat Pengeluaran</h3>
@@ -59,16 +55,6 @@ export const TransactionHistory: React.FC<TransactionHistoryProps> = ({
             Total {filteredTransactions.length} transaksi tercatat
           </p>
         </div>
-
-        {hasSampleData && (
-          <button
-            type="button"
-            onClick={onClearSampleData}
-            className="self-start sm:self-auto py-1 px-3 rounded-full border border-[#1E232A] bg-[#FEF3E8] text-[#B05B17] hover:bg-[#FDECEE] hover:text-[#E63946] text-xs font-bold transition-colors cursor-pointer"
-          >
-            Hapus Data Contoh
-          </button>
-        )}
       </div>
 
       {/* Category Filter Chips */}

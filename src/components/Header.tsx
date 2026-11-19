@@ -1,16 +1,12 @@
 import React from 'react';
-import { Sparkles, RotateCcw } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
 import { formatCurrentMonthYear } from '../utils/format';
 
 interface HeaderProps {
-  onResetAllData?: () => void;
   onOpenStoryModal?: () => void;
 }
 
-export const Header: React.FC<HeaderProps> = ({
-  onResetAllData,
-  onOpenStoryModal,
-}) => {
+export const Header: React.FC<HeaderProps> = ({ onOpenStoryModal }) => {
   return (
     <header className="border-b-2 border-[#1E232A] bg-white sticky top-0 z-30 px-4 py-3 shadow-[0_2px_0px_#1E232A]">
       <div className="max-w-5xl mx-auto flex items-center justify-between gap-3">
@@ -29,26 +25,13 @@ export const Header: React.FC<HeaderProps> = ({
               </span>
             </div>
             <p className="text-[11px] font-semibold text-[#64748B] hidden md:block">
-              Tracker Pengeluaran Gemoy &middot; {formatCurrentMonthYear()}
+              Tracker Pengeluaran &middot; {formatCurrentMonthYear()}
             </p>
           </div>
         </div>
 
-        {/* Right Actions */}
+        {/* Right Actions: Story Recap Button */}
         <div className="flex items-center gap-2">
-          {onResetAllData && (
-            <button
-              type="button"
-              onClick={onResetAllData}
-              title="Kembalikan data ke contoh awal"
-              className="px-2.5 py-1.5 rounded-xl border border-[#1E232A]/30 hover:border-[#1E232A] bg-[#F8F5EE] hover:bg-[#F2EDE2] text-[#64748B] hover:text-[#1E232A] text-xs font-bold transition-all flex items-center gap-1 cursor-pointer"
-            >
-              <RotateCcw size={13} />
-              <span className="hidden sm:inline">Reset</span>
-            </button>
-          )}
-
-          {/* Active Story Recap Button */}
           {onOpenStoryModal && (
             <button
               type="button"
