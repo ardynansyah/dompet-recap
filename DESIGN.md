@@ -131,12 +131,12 @@ Banner dinamis muncul dengan pesan gaul sesuai kondisi saldo:
 ```text
 =========================================
             DOMPET RECAP MART
-       "Catatan Realita Pengeluaran"
+        Struk Catatan Pengeluaran
 =========================================
-PERIODE : NOV 2026          KASIR: SELF
-STATUS  : MULAI WASPADA
+PERIODE        : NOVEMBER 2026
+TANGGAL CETAK  : 19 NOV 2026
 -----------------------------------------
-[ITEMIZED SUMMARY]
+[RINCIAN KATEGORI]
 - Makan & Minum        : Rp 1.200.000 (45%)
 - Kopi & Nongkrong     : Rp   450.000 (17%)
 - Transport            : Rp   350.000 (13%)
@@ -146,9 +146,7 @@ TOTAL KELUAR           : Rp 2.450.000
 SISA BUDGET            : Rp   550.000
 =========================================
 [BARCODE OTENTIK]
-"Barang yang udah dibeli ga bisa dibalikin.
- Begitu juga saldo rekening lu."
-"Terima kasih telah berjuang bulan ini!"
+TERIMA KASIH TELAH BERTAHAN BULAN INI
 =========================================
 ```
 
@@ -169,14 +167,19 @@ SISA BUDGET            : Rp   550.000
   - Tampil di bagian bawah kartu budget jika persentase pengeluaran `>= 75%`.
   - Border tebal `border-2`, teks bold, warna latar sesuai tabel warning (Amber / Rose / Dark Red).
 
-### 5.2 Grafik Pengeluaran: "Larinya Duit Lu"
-Menampilkan visualisasi data yang bersih dan mudah dipahami dalam 1 kartu bento terpadu:
-1. **Category Breakdown Bar (Horizontal Segmented Bar):**
-   - Menampilkan alokasi pengeluaran per kategori secara proporsional menggunakan segmen warna solid pastel-pop.
-   - Di bawah bar terdapat daftar chip kategori lengkap dengan persentase dan nominal yang rapi.
-2. **Daily Spending Mini-Graph (Grafik Batang Harian):**
-   - Grafik batang mini 7 hari terakhir atau hari-hari dengan transaksi pengeluaran.
-   - Batang dengan warna solid `bg-[#1E232A]` atau aksen kategori, dengan interaksi hover/tap yang menampilkan tooltip nominal pasti (`Rp 45.000`).
+### 5.2 Grafik Pengeluaran: "Larinya Duit Lu" (Gaya Catatan Finansial myBCA)
+Menampilkan visualisasi data yang bersih dan mudah dipahami:
+1. **Thin-Ring Donut Chart:**
+   - Cincin ramping elegan (*stroke-width 12px* normal, *17px* aktif) dengan celah presisi 3px antar segmen warna.
+   - Tanpa tempelan ikon di atas garis lingkaran agar tetap bersih dan minimalis.
+2. **Konten Tengah Lingkaran:**
+   - Menampilkan label *"Total Kepake"*, angka nominal Rupiah besar, serta **tombol ikon mata (`Eye` / `EyeOff`)** tepat di bawahnya untuk menyensor saldo (`Rp ••••••`) secara instan.
+   - Saat segmen warna disentuh/di-klik, bagian tengah lingkaran menampilkan nama kategori, nominal, dan persentase porsi.
+3. **Dropdown Pemilih Bulan:**
+   - Diletakkan di bagian atas kanan kartu untuk beralih bulan/tahun secara cepat.
+4. **Legend & Tombol Share:**
+   - Rincian kategori rapi dengan dot warna solid, nominal, dan persentase.
+   - Tombol *"Share Chart ke Story"* di bagian bawah untuk langsung membuka preview kartu Story 9:16.
 
 ### 5.3 Form Input Cepat: "Catet Jajan"
 - **Nominal Display:** Input angka besar dengan prefix `Rp` permanen dan format pemisah ribuan otomatis.
@@ -195,14 +198,14 @@ Menampilkan visualisasi data yang bersih dan mudah dipahami dalam 1 kartu bento 
   - Nominal merah tegas di sebelah kanan (`- Rp 35.000`).
   - Tombol hapus minimalis (`Trash2`) dengan konfirmasi hapus cepat.
 
-### 5.5 Kartu IG Story Recap (9:16) — Siap Pamer
-Modal preview interaktif dengan rasio vertikal 9:16 (`1080 x 1920 px` high resolution):
-- **Tema 1: Struk Kasir (Thermal Paper Style):**
-  - Kertas gading alami (`#FCFBF7`), gerigi sobekan kertas (*sawtooth tear*) di atas dan bawah, tipografi monospace `Space Mono`, barcode otentik, dan catatan kasir santai.
-- **Tema 2: Modern Wrapped (Bold Editorial Color-Block):**
-  - Latar solid Dark Slate (`#181B20`), kartu blok warna kontras tinggi, tipografi besar `Plus Jakarta Sans`, highlight top 3 pengeluaran terbesar, dan badge status dompet.
+### 5.5 Kartu IG Story Recap (9:16) — 2 Opsi Bersih & Minimalis
+Modal preview interaktif dengan rasio vertikal 9:16 (`1080 x 1920 px` high resolution), **bebas dari badge status/mode alay**:
+- **Opsi 1: Struk Kasir (Minimalist Thermal Receipt):**
+  - Kertas gading alami (`#FCFBF7`), gerigi sobekan kertas (*sawtooth tear*) di atas dan bawah, tipografi monospace `Space Mono`, barcode rapi di bawah, tanggal/bulan, rincian kategori, dan total pengeluaran tanpa status mode-modean.
+- **Opsi 2: Clean Chart (Aesthetic Thin-Ring Donut):**
+  - Tampilan super bersih berlatar dark slate (`#181B20`) berfokus penuh pada **Donut Chart** (gaya cincin tipis myBCA), header bulan & tahun, dan daftar persentase kategori singkat di bawahnya. Minim teks, elegan, dan estetik.
 - **Fitur Privasi "Sensor Nominal Rp":**
-  - Saklar toggle untuk menyamarkan nominal menjadi `Rp •••••••`, sehingga aman dibagikan di Instagram Story tanpa risih saldo diketahui orang lain.
+  - Saklar toggle / tombol mata untuk menyamarkan nominal menjadi `Rp ••••••`, sehingga aman dibagikan di Instagram Story tanpa membeberkan saldo pribadi.
 
 ---
 

@@ -69,19 +69,18 @@ Build a modern, fast, and responsive personal expense tracker web application in
 - Button: **"Bikin Recap IG Story"** that opens a responsive Modal/Drawer.
 - Inside the Modal:
   - **Live Preview of a 9:16 Aspect Ratio Card** (`aspect-[9/16]`, styled cleanly to export at high resolution).
-  - **2 Selectable Card Themes:**
-    1. **Struk Kasir:** Monospace font, off-white paper texture feel, dashed dividers, itemized category breakdown, fake barcode at the bottom, and witty casual Indonesian cashier note.
-    2. **Modern Wrapped:** Sleek dark/pastel gradient card, bold typography, mini category bar graph, top spending highlight, and wallet status badge.
+  - **2 Selectable Clean Card Themes (Bebas dari badge status/mode alay):**
+    1. **Struk Kasir:** Monospace font, off-white paper texture, dashed dividers, rincian kategori, total pengeluaran, barcode kasir di bawah, dan catatan receipt rapi.
+    2. **Clean Chart:** Tampilan super bersih berfokus pada **Donut Chart** (gaya cincin tipis myBCA), header bulan & tahun, dan rincian persentase kategori singkat di bawahnya.
   - **Auto-Calculated Card Content:**
     - Month & Year header
-    - Total Transactions count & Total Spending (plus a toggle **"Sensor Nominal Rp"** for privacy when sharing!)
-    - Top 3 Spending Categories with percentages & mini visual bars
-    - Current Wallet Status Badge
-  - **Action Button:** **"Download PNG"** using `toPng` from `html-to-image` with `pixelRatio: 3` so text and graphs stay crisp on Instagram Stories.
+    - Total Transactions count & Total Spending (plus toggle **"Sensor Nominal Rp"** untuk privasi)
+    - Persentase alokasi pengeluaran per kategori
+  - **Action Button:** **"Download PNG"** using `toPng` from `html-to-image` with `pixelRatio: 3` so text and charts stay ultra-sharp on Instagram Stories.
 
 ## 5. Step-by-Step Implementation Instructions
 1. **Setup & Types:** Define TypeScript interfaces for `Transaction`, `Category`, and `BudgetSettings`, plus helper functions for IDR formatting and `localStorage` sync.
 2. **Core Dashboard, Warning & Form:** Build the responsive 2-column desktop / 1-column mobile layout with the Budget Summary header, dynamic Near-Limit Warning Banner, and Quick Expense Input.
-3. **Spending Graph & Transaction List:** Build the real-time Spending Graph component, date-grouped transaction list, category filters, and delete functionality with 4-5 realistic casual Indonesian sample transactions (plus a *"Hapus Data Contoh"* button).
-4. **Story Recap Modal & PNG Export:** Build the 9:16 Recap Card component with theme switcher (*Struk Kasir* vs. *Modern Wrapped*), privacy toggle (*Sensor Nominal Rp*), and `html-to-image` download handler.
+3. **Spending Graph & Transaction List:** Build the real-time Spending Graph component (myBCA thin-ring Donut Chart), date-grouped transaction list, category filters, and delete functionality with 4-5 realistic casual Indonesian sample transactions (plus a *"Hapus Data Contoh"* button).
+4. **Story Recap Modal & PNG Export:** Build the 9:16 Recap Card component with clean 2-theme switcher (*Struk Kasir* vs. *Clean Chart*), privacy toggle (*Sensor Nominal Rp*), and `html-to-image` download handler.
 5. **Polish:** Ensure smooth micro-interactions, clean minimal-icon aesthetics, and zero horizontal overflow on mobile viewports.

@@ -4,9 +4,13 @@ import { formatCurrentMonthYear } from '../utils/format';
 
 interface HeaderProps {
   onResetAllData?: () => void;
+  onOpenStoryModal?: () => void;
 }
 
-export const Header: React.FC<HeaderProps> = ({ onResetAllData }) => {
+export const Header: React.FC<HeaderProps> = ({
+  onResetAllData,
+  onOpenStoryModal,
+}) => {
   return (
     <header className="border-b-2 border-[#1E232A] bg-white sticky top-0 z-30 px-4 py-3 shadow-[0_2px_0px_#1E232A]">
       <div className="max-w-5xl mx-auto flex items-center justify-between gap-3">
@@ -44,19 +48,18 @@ export const Header: React.FC<HeaderProps> = ({ onResetAllData }) => {
             </button>
           )}
 
-          {/* Story Recap Button (Disabled/Placeholder for Step 4) */}
-          <button
-            type="button"
-            disabled
-            title="Fitur ini akan dikerjakan di Step 4"
-            className="px-3.5 py-1.5 rounded-xl border-2 border-[#1E232A]/40 bg-[#F2EDE2] text-[#64748B] text-xs font-bold flex items-center gap-1.5 cursor-not-allowed opacity-75"
-          >
-            <Sparkles size={14} className="text-[#F95738]" />
-            <span>Story Recap</span>
-            <span className="text-[9px] font-black uppercase px-1.5 py-0.2 rounded-full bg-[#1E232A] text-white">
-              Step 4
-            </span>
-          </button>
+          {/* Active Story Recap Button */}
+          {onOpenStoryModal && (
+            <button
+              type="button"
+              onClick={onOpenStoryModal}
+              title="Bikin Story Recap"
+              className="px-3.5 py-1.5 rounded-xl border-2 border-[#1E232A] bg-[#7058D0] text-white text-xs font-black flex items-center gap-1.5 btn-tactile cursor-pointer"
+            >
+              <Sparkles size={14} />
+              <span>Story Recap</span>
+            </button>
+          )}
         </div>
       </div>
     </header>

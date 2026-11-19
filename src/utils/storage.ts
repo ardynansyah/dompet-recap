@@ -1,5 +1,5 @@
 import type { Transaction } from '../types';
-import { getTodayDateString } from './format';
+import { getCurrentMonthPrefix } from './format';
 
 const TRANSACTIONS_KEY = 'dompet_recap_transactions_v1';
 const BUDGET_KEY = 'dompet_recap_budget_v1';
@@ -7,20 +7,33 @@ const BUDGET_KEY = 'dompet_recap_budget_v1';
 export const DEFAULT_BUDGET = 3000000;
 
 export function getInitialSampleTransactions(): Transaction[] {
-  const today = getTodayDateString();
-  const d = new Date();
-  
-  const yesterdayDate = new Date(d);
-  yesterdayDate.setDate(d.getDate() - 1);
-  const yesterday = yesterdayDate.toISOString().slice(0, 10);
+  const now = new Date();
+  const currentYear = now.getFullYear();
+  const currentMonth = now.getMonth(); // 0-indexed
+  const currentDay = now.getDate(); // 1 - 31
 
-  const threeDaysAgoDate = new Date(d);
-  threeDaysAgoDate.setDate(d.getDate() - 3);
-  const threeDaysAgo = threeDaysAgoDate.toISOString().slice(0, 10);
+  // Format local YYYY-MM-DD
+  const formatLocal = (d: Date) => {
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${y}-${m}-${day}`;
+  };
 
-  const fiveDaysAgoDate = new Date(d);
-  fiveDaysAgoDate.setDate(d.getDate() - 5);
-  const fiveDaysAgo = fiveDaysAgoDate.toISOString().slice(0, 10);
+  // Ensure dates are strictly within the current month of the device
+  const day1 = currentDay;
+  const day2 = currentDay;
+  const day3 = Math.max(1, currentDay - 1);
+  const day4 = Math.max(1, currentDay - 2);
+  const day5 = Math.max(1, currentDay - 3);
+
+  const date1 = formatLocal(new Date(currentYear, currentMonth, day1));
+  const date2 = formatLocal(new Date(currentYear, currentMonth, day2));
+  const date3 = formatLocal(new Date(currentYear, currentMonth, day3));
+  const date4 = formatLocal(new Date(currentYear, currentMonth, day4));
+  const date5 = formatLocal(new Date(currentYear, currentMonth, day5));
+
+  const nowTime = now.getTime();
 
   return [
     {
@@ -28,8 +41,8 @@ export function getInitialSampleTransactions(): Transaction[] {
       title: 'Nasi Padang Lauk Rendang',
       amount: 32000,
       categoryId: 'makan',
-      date: today,
-      createdAt: Date.now() - 3600000 * 2,
+      date: date1,
+      createdAt: nowTime - 3600000 * 2,
       isSample: true,
     },
     {
@@ -37,8 +50,8 @@ export function getInitialSampleTransactions(): Transaction[] {
       title: 'Kopi Susu Gula Aren Dobel Shot',
       amount: 28000,
       categoryId: 'nongkrong',
-      date: today,
-      createdAt: Date.now() - 3600000 * 4,
+      date: date2,
+      createdAt: nowTime - 3600000 * 4,
       isSample: true,
     },
     {
@@ -46,8 +59,8 @@ export function getInitialSampleTransactions(): Transaction[] {
       title: 'Bensin & Parkir Seharian',
       amount: 50000,
       categoryId: 'transport',
-      date: yesterday,
-      createdAt: Date.now() - 86400000 * 1,
+      date: date3,
+      createdAt: nowTime - 86400000 * 1,
       isSample: true,
     },
     {
@@ -55,8 +68,8 @@ export function getInitialSampleTransactions(): Transaction[] {
       title: 'Kaos Basic Katun',
       amount: 149000,
       categoryId: 'belanja',
-      date: threeDaysAgo,
-      createdAt: Date.now() - 86400000 * 3,
+      date: date4,
+      createdAt: nowTime - 86400000 * 2,
       isSample: true,
     },
     {
@@ -64,8 +77,8 @@ export function getInitialSampleTransactions(): Transaction[] {
       title: 'Langganan Streaming & Game',
       amount: 89000,
       categoryId: 'hiburan',
-      date: fiveDaysAgo,
-      createdAt: Date.now() - 86400000 * 5,
+      date: date5,
+      createdAt: nowTime - 86400000 * 3,
       isSample: true,
     },
   ];
@@ -80,7 +93,21 @@ export function loadTransactionsFromStorage(): Transaction[] {
       return initial;
     }
     const parsed = JSON.parse(raw);
-    if (Array.isArray(parsed)) {
+    if (Array.isArray(parsed) && parsed.length > 0) {
+      const currentMonthPrefix = getCurrentMonthPrefix();
+      const hasCurrentMonth = parsed.some((t: Transaction) =>
+        t.date && t.date.startsWith(currentMonthPrefix)
+      );
+      const allSamples = parsed.every((t: Transaction) => t.isSample);
+
+      // If user hasn't added custom transactions and sample dates are from an older/different month,
+      // refresh them to the current real-time month so the charts are never empty!
+      if (allSamples && !hasCurrentMonth) {
+        const fresh = getInitialSampleTransactions();
+        saveTransactionsToStorage(fresh);
+        return fresh;
+      }
+
       return parsed;
     }
     return getInitialSampleTransactions();

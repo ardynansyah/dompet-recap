@@ -4,7 +4,7 @@
  */
 export function formatRupiah(amount: number, hideAmount: boolean = false): string {
   if (hideAmount) {
-    return 'Rp •••••••';
+    return 'Rp ••••••';
   }
 
   const formattedNumber = new Intl.NumberFormat('id-ID', {
@@ -16,7 +16,7 @@ export function formatRupiah(amount: number, hideAmount: boolean = false): strin
 
 /**
  * Format tanggal input string YYYY-MM-DD ke label ramah pengguna
- * Contoh: "Hari Ini", "Kemarin", atau "18 Nov 2026"
+ * Contoh: "Hari Ini", "Kemarin", atau formatted string lokal
  */
 export function formatDateLabel(dateString: string): string {
   const [year, month, day] = dateString.split('-').map(Number);
@@ -47,7 +47,7 @@ export function formatDateLabel(dateString: string): string {
 }
 
 /**
- * Mendapatkan string tanggal hari ini dalam format YYYY-MM-DD
+ * Mendapatkan string tanggal hari ini dalam format lokal YYYY-MM-DD
  */
 export function getTodayDateString(): string {
   const now = new Date();
@@ -58,7 +58,7 @@ export function getTodayDateString(): string {
 }
 
 /**
- * Mendapatkan string bulan dan tahun saat ini (YYYY-MM)
+ * Mendapatkan string bulan dan tahun saat ini (YYYY-MM) sesuai waktu lokal
  */
 export function getCurrentMonthPrefix(): string {
   const now = new Date();
@@ -68,11 +68,63 @@ export function getCurrentMonthPrefix(): string {
 }
 
 /**
- * Format bulan dan tahun (misal: "November 2026")
+ * Format tanggal hari ini dalam huruf kapital untuk struk (misal: "19 NOV 2026")
+ */
+export function getTodayFormattedUpper(): string {
+  const now = new Date();
+  return now
+    .toLocaleDateString('id-ID', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+    })
+    .toUpperCase();
+}
+
+/**
+ * Mendapatkan daftar 6 opsi bulan terakhir untuk dropdown pemilih bulan
+ */
+export function getRecentMonthOptions(): { value: string; label: string }[] {
+  const options = [];
+  const now = new Date();
+  for (let i = 0; i < 6; i++) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const value = `${year}-${month}`;
+    const label = d.toLocaleDateString('id-ID', {
+      month: 'long',
+      year: 'numeric',
+    });
+    options.push({ value, label });
+  }
+  return options;
+}
+
+/**
+ * Format string YYYY-MM ke nama bulan dan tahun (misal: "2026-11" -> "November 2026")
+ */
+export function formatMonthValueToLabel(monthValue: string): string {
+  if (!monthValue || !monthValue.includes('-')) {
+    const now = new Date();
+    return now.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
+  }
+  const [year, month] = monthValue.split('-').map(Number);
+  const d = new Date(year, month - 1, 1);
+  return d.toLocaleDateString('id-ID', {
+    month: 'long',
+    year: 'numeric',
+  });
+}
+
+/**
+ * Format bulan dan tahun sesuai waktu perangkat atau dateString yang diberikan
  */
 export function formatCurrentMonthYear(dateString?: string): string {
-  const date = dateString ? new Date(dateString) : new Date();
-  return date.toLocaleDateString('id-ID', {
+  if (dateString) {
+    return formatMonthValueToLabel(dateString.slice(0, 7));
+  }
+  return new Date().toLocaleDateString('id-ID', {
     month: 'long',
     year: 'numeric',
   });

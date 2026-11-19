@@ -11,8 +11,10 @@ import { getCurrentMonthPrefix } from './utils/format';
 import { Header } from './components/Header';
 import { BudgetHeroCard } from './components/BudgetHeroCard';
 import { QuickAddExpenseForm } from './components/QuickAddExpenseForm';
+import { SpendingDonutChart } from './components/SpendingDonutChart';
 import { TransactionHistory } from './components/TransactionHistory';
 import { BudgetEditModal } from './components/BudgetEditModal';
+import { StoryRecapModal } from './components/StoryRecapModal';
 
 function App() {
   const [transactions, setTransactions] = useState<Transaction[]>(() =>
@@ -21,7 +23,12 @@ function App() {
   const [monthlyBudget, setMonthlyBudget] = useState<number>(() =>
     loadBudgetFromStorage()
   );
+  const [selectedMonth, setSelectedMonth] = useState<string>(() =>
+    getCurrentMonthPrefix()
+  );
+  const [isPrivacyMode, setIsPrivacyMode] = useState<boolean>(false);
   const [isEditBudgetOpen, setIsEditBudgetOpen] = useState<boolean>(false);
+  const [isStoryModalOpen, setIsStoryModalOpen] = useState<boolean>(false);
 
   // Sync transactions to localStorage
   useEffect(() => {
@@ -33,13 +40,17 @@ function App() {
     saveBudgetToStorage(monthlyBudget);
   }, [monthlyBudget]);
 
-  // Calculate total spent for the current month
-  const currentMonth = getCurrentMonthPrefix();
+  // Calculate total spent for the currently selected month
   const totalSpent = useMemo(() => {
     return transactions
-      .filter((t) => t.date.startsWith(currentMonth))
+      .filter((t) => t.date.startsWith(selectedMonth))
       .reduce((sum, t) => sum + t.amount, 0);
-  }, [transactions, currentMonth]);
+  }, [transactions, selectedMonth]);
+
+  // Transactions for the currently selected month
+  const displayedTransactions = useMemo(() => {
+    return transactions.filter((t) => t.date.startsWith(selectedMonth));
+  }, [transactions, selectedMonth]);
 
   // Check if any sample data remains
   const hasSampleData = transactions.some((t) => t.isSample);
@@ -81,10 +92,17 @@ function App() {
     setMonthlyBudget(newBudget);
   };
 
+  const handleTogglePrivacy = () => {
+    setIsPrivacyMode((prev) => !prev);
+  };
+
   return (
     <div className="min-h-screen bg-[#F8F5EE] text-[#1E232A] flex flex-col font-sans">
       {/* Header */}
-      <Header onResetAllData={handleResetToSampleData} />
+      <Header
+        onResetAllData={handleResetToSampleData}
+        onOpenStoryModal={() => setIsStoryModalOpen(true)}
+      />
 
       {/* Main Content Area */}
       <main className="flex-1 w-full max-w-5xl mx-auto px-4 py-6 md:py-8">
@@ -92,21 +110,34 @@ function App() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
           {/* Left Column (Sticky on Desktop) */}
           <section className="lg:col-span-5 space-y-6 lg:sticky lg:top-20">
-            {/* Monthly Budget Summary Card */}
+            {/* Monthly Budget Summary Card with Warning Banner & Story Button */}
             <BudgetHeroCard
               monthlyBudget={monthlyBudget}
               totalSpent={totalSpent}
+              selectedMonth={selectedMonth}
               onOpenEditBudget={() => setIsEditBudgetOpen(true)}
+              onOpenStoryModal={() => setIsStoryModalOpen(true)}
             />
 
             {/* Quick Add Expense Form */}
             <QuickAddExpenseForm onAddTransaction={handleAddTransaction} />
           </section>
 
-          {/* Right Column: Transaction History */}
-          <section className="lg:col-span-7">
-            <TransactionHistory
+          {/* Right Column: Spending Analytics & Transaction History */}
+          <section className="lg:col-span-7 space-y-6">
+            {/* Thin-Ring Donut Chart (myBCA Catatan Finansial style) */}
+            <SpendingDonutChart
               transactions={transactions}
+              selectedMonth={selectedMonth}
+              onSelectMonth={setSelectedMonth}
+              isPrivacyMode={isPrivacyMode}
+              onTogglePrivacy={handleTogglePrivacy}
+              onOpenStoryModal={() => setIsStoryModalOpen(true)}
+            />
+
+            {/* Transaction History List */}
+            <TransactionHistory
+              transactions={displayedTransactions}
               onDeleteTransaction={handleDeleteTransaction}
               onClearSampleData={handleClearSampleData}
               hasSampleData={hasSampleData}
@@ -121,6 +152,16 @@ function App() {
         currentBudget={monthlyBudget}
         onClose={() => setIsEditBudgetOpen(false)}
         onSave={handleSaveBudget}
+      />
+
+      {/* 9:16 IG Story Recap Modal */}
+      <StoryRecapModal
+        isOpen={isStoryModalOpen}
+        onClose={() => setIsStoryModalOpen(false)}
+        transactions={transactions}
+        monthlyBudget={monthlyBudget}
+        selectedMonth={selectedMonth}
+        initialHideAmount={isPrivacyMode}
       />
     </div>
   );
