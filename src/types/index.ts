@@ -37,3 +37,10 @@ export interface WalletStatusInfo {
   badgeBg: string;
   badgeText: string;
 }
+
+export interface BackupData {
+  version: number;
+  exportedAt: string;
+  monthlyBudget: number;
+  transactions: Transaction[];
+}

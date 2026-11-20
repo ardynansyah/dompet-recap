@@ -1,11 +1,5 @@
-import { useState, useEffect, useMemo } from 'react';
-import type { Transaction, CategoryId } from './types';
-import {
-  loadTransactionsFromStorage,
-  saveTransactionsToStorage,
-  loadBudgetFromStorage,
-  saveBudgetToStorage,
-} from './utils/storage';
+import { useState, useMemo } from 'react';
+import { useExpenseStore } from './hooks/useExpenseStore';
 import { getCurrentMonthPrefix } from './utils/format';
 import { Header } from './components/Header';
 import { BudgetHeroCard } from './components/BudgetHeroCard';
@@ -16,28 +10,23 @@ import { BudgetEditModal } from './components/BudgetEditModal';
 import { StoryRecapModal } from './components/StoryRecapModal';
 
 function App() {
-  const [transactions, setTransactions] = useState<Transaction[]>(() =>
-    loadTransactionsFromStorage()
-  );
-  const [monthlyBudget, setMonthlyBudget] = useState<number>(() =>
-    loadBudgetFromStorage()
-  );
+  // Custom hook memusatkan state transaksi, budget, dan sinkronisasi localStorage
+  const {
+    transactions,
+    monthlyBudget,
+    addTransaction,
+    deleteTransaction,
+    saveBudget,
+    exportBackupData,
+    importBackupData,
+  } = useExpenseStore();
+
   const [selectedMonth, setSelectedMonth] = useState<string>(() =>
     getCurrentMonthPrefix()
   );
   const [isPrivacyMode, setIsPrivacyMode] = useState<boolean>(false);
   const [isEditBudgetOpen, setIsEditBudgetOpen] = useState<boolean>(false);
   const [isStoryModalOpen, setIsStoryModalOpen] = useState<boolean>(false);
-
-  // Sync transactions to localStorage
-  useEffect(() => {
-    saveTransactionsToStorage(transactions);
-  }, [transactions]);
-
-  // Sync budget to localStorage
-  useEffect(() => {
-    saveBudgetToStorage(monthlyBudget);
-  }, [monthlyBudget]);
 
   // Calculate total spent for the currently selected month
   const totalSpent = useMemo(() => {
@@ -50,33 +39,6 @@ function App() {
   const displayedTransactions = useMemo(() => {
     return transactions.filter((t) => t.date.startsWith(selectedMonth));
   }, [transactions, selectedMonth]);
-
-  // Handlers
-  const handleAddTransaction = (newTx: {
-    title: string;
-    amount: number;
-    categoryId: CategoryId;
-    date: string;
-  }) => {
-    const transaction: Transaction = {
-      id: `tx-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
-      title: newTx.title,
-      amount: newTx.amount,
-      categoryId: newTx.categoryId,
-      date: newTx.date,
-      createdAt: Date.now(),
-    };
-
-    setTransactions((prev) => [transaction, ...prev]);
-  };
-
-  const handleDeleteTransaction = (id: string) => {
-    setTransactions((prev) => prev.filter((t) => t.id !== id));
-  };
-
-  const handleSaveBudget = (newBudget: number) => {
-    setMonthlyBudget(newBudget);
-  };
 
   const handleTogglePrivacy = () => {
     setIsPrivacyMode((prev) => !prev);
@@ -103,7 +65,7 @@ function App() {
             />
 
             {/* Quick Add Expense Form */}
-            <QuickAddExpenseForm onAddTransaction={handleAddTransaction} />
+            <QuickAddExpenseForm onAddTransaction={addTransaction} />
           </section>
 
           {/* Right Column: Spending Analytics & Transaction History */}
@@ -121,18 +83,20 @@ function App() {
             {/* Transaction History List */}
             <TransactionHistory
               transactions={displayedTransactions}
-              onDeleteTransaction={handleDeleteTransaction}
+              onDeleteTransaction={deleteTransaction}
             />
           </section>
         </div>
       </main>
 
-      {/* Edit Budget Modal */}
+      {/* Edit Budget & Data Backup Modal */}
       <BudgetEditModal
         isOpen={isEditBudgetOpen}
         currentBudget={monthlyBudget}
         onClose={() => setIsEditBudgetOpen(false)}
-        onSave={handleSaveBudget}
+        onSave={saveBudget}
+        onExportBackup={exportBackupData}
+        onImportBackup={importBackupData}
       />
 
       {/* 9:16 IG Story Recap Modal */}

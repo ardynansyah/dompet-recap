@@ -5,6 +5,28 @@ const BUDGET_KEY = 'dompet_recap_budget_v1';
 
 export const DEFAULT_BUDGET = 3000000;
 
+/**
+ * Validasi runtime untuk memastikan objek transaksi valid dan aman dari data korup
+ */
+export function isValidTransaction(item: unknown): item is Transaction {
+  if (!item || typeof item !== 'object') return false;
+  const t = item as Record<string, unknown>;
+  return (
+    typeof t.id === 'string' &&
+    t.id.trim().length > 0 &&
+    typeof t.title === 'string' &&
+    t.title.trim().length > 0 &&
+    typeof t.amount === 'number' &&
+    Number.isFinite(t.amount) &&
+    t.amount > 0 &&
+    typeof t.categoryId === 'string' &&
+    typeof t.date === 'string' &&
+    t.date.length === 10 &&
+    !('isSample' in t && t.isSample) &&
+    !t.id.startsWith('sample-')
+  );
+}
+
 export function loadTransactionsFromStorage(): Transaction[] {
   try {
     const raw = localStorage.getItem(TRANSACTIONS_KEY);
@@ -13,12 +35,8 @@ export function loadTransactionsFromStorage(): Transaction[] {
     }
     const parsed = JSON.parse(raw);
     if (Array.isArray(parsed)) {
-      // Clean up any legacy sample/dummy data from earlier development
-      const cleanTransactions = parsed.filter(
-        (t: Transaction) =>
-          !('isSample' in t && (t as Record<string, unknown>).isSample) &&
-          !t.id?.startsWith('sample-')
-      );
+      // Validasi tipe setiap item dan bersihkan data corrupt / legacy sample
+      const cleanTransactions = parsed.filter(isValidTransaction);
       if (cleanTransactions.length !== parsed.length) {
         saveTransactionsToStorage(cleanTransactions);
       }
@@ -33,6 +51,7 @@ export function loadTransactionsFromStorage(): Transaction[] {
 
 export function saveTransactionsToStorage(transactions: Transaction[]): void {
   try {
+    if (!Array.isArray(transactions)) return;
     localStorage.setItem(TRANSACTIONS_KEY, JSON.stringify(transactions));
   } catch (err) {
     console.error('Gagal menyimpan transaksi ke localStorage:', err);
@@ -47,14 +66,19 @@ export function loadBudgetFromStorage(): number {
       return DEFAULT_BUDGET;
     }
     const parsed = Number(raw);
-    return Number.isFinite(parsed) && parsed > 0 ? parsed : DEFAULT_BUDGET;
-  } catch {
+    if (typeof parsed === 'number' && Number.isFinite(parsed) && parsed > 0) {
+      return parsed;
+    }
+    return DEFAULT_BUDGET;
+  } catch (err) {
+    console.error('Gagal membaca budget dari localStorage:', err);
     return DEFAULT_BUDGET;
   }
 }
 
 export function saveBudgetToStorage(budget: number): void {
   try {
+    if (typeof budget !== 'number' || !Number.isFinite(budget) || budget <= 0) return;
     localStorage.setItem(BUDGET_KEY, String(budget));
   } catch (err) {
     console.error('Gagal menyimpan budget ke localStorage:', err);

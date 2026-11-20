@@ -26,7 +26,7 @@ export const StoryRecapModal: React.FC<StoryRecapModalProps> = ({
 }) => {
   const [theme, setTheme] = useState<CardTheme>('receipt');
   const [localHideAmount, setLocalHideAmount] = useState<boolean | null>(null);
-  const [isDownloading, setIsDownloading] = useState<boolean>(false);
+  const [isExporting, setIsExporting] = useState<boolean>(false);
   const [downloadSuccess, setDownloadSuccess] = useState<boolean>(false);
 
   const cardRef = useRef<HTMLDivElement>(null);
@@ -36,22 +36,29 @@ export const StoryRecapModal: React.FC<StoryRecapModalProps> = ({
   const hideAmount = localHideAmount !== null ? localHideAmount : initialHideAmount;
 
   const handleClose = () => {
+    // Cegah modal ditutup tidak sengaja selama proses rendering berlangsung
+    if (isExporting) return;
     setLocalHideAmount(null);
     onClose();
   };
 
   const handleDownload = async () => {
-    if (!cardRef.current || isDownloading) return;
+    if (!cardRef.current || isExporting) return;
 
     try {
-      setIsDownloading(true);
+      setIsExporting(true);
       setDownloadSuccess(false);
 
-      // Give a tiny tick for any pending layout adjustments
-      await new Promise((resolve) => setTimeout(resolve, 100));
+      // Pastikan custom fonts (Plus Jakarta Sans, Space Mono) selesai ter-load sebelum render
+      if (typeof document !== 'undefined' && 'fonts' in document) {
+        await document.fonts.ready;
+      }
+
+      // Beri jeda singkat untuk memastikan layout DOM stabil
+      await new Promise((resolve) => setTimeout(resolve, 150));
 
       const dataUrl = await toPng(cardRef.current, {
-        pixelRatio: 3, // Ultra-sharp 1080x1920 IG Story resolution
+        pixelRatio: 3, // Resolusi tinggi 1080x1920 IG Story
         cacheBust: true,
       });
 
@@ -65,14 +72,22 @@ export const StoryRecapModal: React.FC<StoryRecapModalProps> = ({
       setTimeout(() => setDownloadSuccess(false), 3000);
     } catch (err) {
       console.error('Gagal membuat gambar PNG:', err);
-      alert('Maaf, ada kendala saat mengunduh gambar. Silakan coba lagi.');
+      alert('Maaf, ada kendala saat mengunduh gambar recap. Silakan coba lagi.');
     } finally {
-      setIsDownloading(false);
+      setIsExporting(false);
     }
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-xs overflow-y-auto">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-xs overflow-y-auto"
+      onClick={(e) => {
+        // Klik di area backdrop hanya menutup modal jika tidak sedang mengekspor
+        if (e.target === e.currentTarget && !isExporting) {
+          handleClose();
+        }
+      }}
+    >
       {/* Modal Container */}
       <div className="w-full max-w-4xl bg-white border-2 border-[#1E232A] rounded-3xl shadow-[6px_6px_0px_#1E232A] overflow-hidden my-auto animate-in fade-in zoom-in-95 duration-150">
         {/* Header */}
@@ -89,7 +104,8 @@ export const StoryRecapModal: React.FC<StoryRecapModalProps> = ({
           <button
             type="button"
             onClick={handleClose}
-            className="p-1.5 rounded-full border border-[#1E232A]/20 hover:border-[#1E232A] hover:bg-white transition-colors cursor-pointer"
+            disabled={isExporting}
+            className="p-1.5 rounded-full border border-[#1E232A]/20 hover:border-[#1E232A] hover:bg-white transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
             aria-label="Tutup modal"
           >
             <X size={18} className="text-[#1E232A]" />
@@ -140,7 +156,8 @@ export const StoryRecapModal: React.FC<StoryRecapModalProps> = ({
                 <button
                   type="button"
                   onClick={() => setTheme('receipt')}
-                  className={`py-2.5 px-3 rounded-xl border-2 text-xs font-black transition-all cursor-pointer ${
+                  disabled={isExporting}
+                  className={`py-2.5 px-3 rounded-xl border-2 text-xs font-black transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed ${
                     theme === 'receipt'
                       ? 'bg-[#1E232A] text-white border-[#1E232A] shadow-[2px_2px_0px_#1E232A]'
                       : 'bg-[#F8F5EE] text-[#1E232A] border-[#1E232A]/30 hover:border-[#1E232A]'
@@ -151,7 +168,8 @@ export const StoryRecapModal: React.FC<StoryRecapModalProps> = ({
                 <button
                   type="button"
                   onClick={() => setTheme('chart')}
-                  className={`py-2.5 px-3 rounded-xl border-2 text-xs font-black transition-all cursor-pointer ${
+                  disabled={isExporting}
+                  className={`py-2.5 px-3 rounded-xl border-2 text-xs font-black transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed ${
                     theme === 'chart'
                       ? 'bg-[#1E232A] text-white border-[#1E232A] shadow-[2px_2px_0px_#1E232A]'
                       : 'bg-[#F8F5EE] text-[#1E232A] border-[#1E232A]/30 hover:border-[#1E232A]'
@@ -180,7 +198,8 @@ export const StoryRecapModal: React.FC<StoryRecapModalProps> = ({
                 <button
                   type="button"
                   onClick={() => setLocalHideAmount(!hideAmount)}
-                  className={`w-11 h-6 rounded-full border-2 border-[#1E232A] transition-colors p-0.5 cursor-pointer flex items-center ${
+                  disabled={isExporting}
+                  className={`w-11 h-6 rounded-full border-2 border-[#1E232A] transition-colors p-0.5 cursor-pointer flex items-center disabled:opacity-50 disabled:cursor-not-allowed ${
                     hideAmount ? 'bg-[#2A9D8F]' : 'bg-[#E6E0D4]'
                   }`}
                   aria-label="Toggle sensor nominal"
@@ -204,7 +223,7 @@ export const StoryRecapModal: React.FC<StoryRecapModalProps> = ({
               <button
                 type="button"
                 onClick={handleDownload}
-                disabled={isDownloading}
+                disabled={isExporting}
                 className="w-full py-3.5 px-4 rounded-2xl border-2 border-[#1E232A] bg-[#2A9D8F] hover:bg-[#238276] text-white text-sm font-black tracking-wide btn-tactile flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
               >
                 {downloadSuccess ? (
@@ -212,7 +231,7 @@ export const StoryRecapModal: React.FC<StoryRecapModalProps> = ({
                     <Check size={18} strokeWidth={2.5} />
                     <span>Berhasil Diunduh!</span>
                   </>
-                ) : isDownloading ? (
+                ) : isExporting ? (
                   <span>Sedang Menyiapkan Gambar...</span>
                 ) : (
                   <>
